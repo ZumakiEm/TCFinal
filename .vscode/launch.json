@@ -16,7 +16,7 @@
             "request": "launch",
             "name": "Debug Current Grammar",
             "input": "src/App/codigoEjemplo.txt",
-            "grammar": "src/App/Lexer.g4",
+            "grammar": "src/App/Rules.g4",
             "startRule": "programa",
             "visualParseTree": true
         },

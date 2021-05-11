@@ -1,0 +1,72 @@
+int _x = 0;
+x += 2;
+
+int main () {
+    double y = 1, z = 3.5;
+
+    for (_x = 5; x < 10; _x = _x + 1)
+        y = exec(y) + exec(z);
+
+    if (y < 100) {
+        y = y / 2;
+        z = y - 5.5;
+    }
+    else
+        z = y + 5.5;
+
+    return 0;
+}
+
+double exec (double valor) {
+    int i = 10;
+
+    while ((i >= 5) && (valor > 3.4))
+        valor -= _x - i;
+
+    return valor;
+}
+
+int _x = 0;
+
+
+return;
+for(x, y=0; x < 10; x++) {
+    x=2;
+    y=0;
+}
+while ((i >= 5) && (valor > 3.4))
+    valor = _x - i;
+
+int x = ++b++;
+if(2 > 0 && (a < b)) {
+    a = b;
+}
+else if(x < z) {
+    b = a;
+}
+int s = ((2 > 0) && (a < b));
+int l = + 2 + (8 - 3);
+int s = (2 + 5) / 10 - ++s;
+int x = 1, z, p = 2;
+float q = 2.5, p;
+int s = (2 > 0) && (a < b);
+int s = (2 > 0) && (a < b) || (4 > 0 && x < t);
+int s = !(2 > 0) && !(a < b);
+
+int suma(int x, int y);
+
+int x = 0;
+x += 2;
+{
+    int p = suma(0,x);
+    p = 100;
+}
+
+int pepe() {
+    int x = 2;
+}
+
+int suma(int x, int y) {
+    int res = x + y;
+    return res;
+}

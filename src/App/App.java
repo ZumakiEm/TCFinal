@@ -1,4 +1,4 @@
-package App;
+//package App;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -13,21 +13,17 @@ public class App {
         CharStream input = CharStreams.fromFileName("src/App/codigoEjemplo.txt");
 
         // create a lexer that feeds off of input CharStream
-        LexerLexer lexer = new LexerLexer(input);
+        RulesLexer lexer = new RulesLexer(input);
         
         // create a buffer of tokens pulled from the lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         
         // create a parser that feeds off the tokens buffer
-        LexerParser parser = new LexerParser(tokens);
-                
-        // Solicito al parser que comience indicando una regla gramatical
-        // En este caso la regla es el simbolo inicial
-        // parser.programa();
+        RulesParser parser = new RulesParser(tokens);
 
         /* CODIGO CORRESPONDIENTE AL USO DE LISTENER */
         // Creo el objeto que tiene los Listeners
-        LexerBaseListener escucha = new MiListener();
+        RulesBaseListener escucha = new MiListener();
 
         // Conecto el objeto con Listeners al parser
         parser.addParseListener(escucha);
@@ -40,7 +36,7 @@ public class App {
         System.out.println(escucha);
 
         // Imprime el arbol obtenido
-        System.out.println(tree.toStringTree(parser));
+        //System.out.println(tree.toStringTree(parser));
 
     }
 }

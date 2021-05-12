@@ -63,6 +63,39 @@ public class MiListener extends RulesBaseListener {
     }
 
     @Override
+    public void exitAsignacion(RulesParser.AsignacionContext ctx) {
+        Id variable = this.tablaSimbolos.searchVariable(ctx.ID().getText());
+        int linea = ctx.getStart().getLine(); // el numero de linea es para el parser error
+
+        if (ctx.getParent().getClass().equals(RulesParser.Lista_declaracionContext.class)) {
+            RulesParser.Lista_declaracionContext lista = (RulesParser.Lista_declaracionContext) ctx.getParent();
+            
+            while(lista.getParent().getClass().equals(RulesParser.Lista_declaracionContext.class)) {
+                lista = (RulesParser.Lista_declaracionContext) lista.getParent();
+            }
+
+            if (lista.getParent().getClass().equals(RulesParser.DeclaracionContext.class)) {
+                String nombreVariable = ctx.ID().getText();
+                String tipoVariable = ((RulesParser.DeclaracionContext) lista.getParent()).tipos().getText();
+                variable = new Variable(nombreVariable, tipoVariable);
+                
+                if (!this.tablaSimbolos.isVariableDeclared(variable)) {
+                    this.tablaSimbolos.addId(variable);
+                }
+                else {
+                    //parser de error
+                }
+            }    
+        }
+        else if (this.tablaSimbolos.isVariableDeclared(ctx.ID().getText())) {
+            this.tablaSimbolos.setUsedId(ctx.ID().getText());
+        }
+        else {
+            //parser de error
+        }
+    }
+
+    @Override
     public void visitTerminal(TerminalNode node) {
         // System.out.println("Info del token: " + node.getSymbol() );
         // System.out.println(" '--> Token: " + node.getSymbol().getText() );

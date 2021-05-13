@@ -10,7 +10,7 @@ public class TablaSimbolos
     
     public TablaSimbolos() {
         this.tablaSimbolos = new LinkedList<HashMap<String, Id>>();
-        addContext();
+        this.addContext();
     }
 
     public static TablaSimbolos getInstance() {
@@ -77,20 +77,41 @@ public class TablaSimbolos
     }
 
     public boolean isVariableDeclared(final Id id) {
-        return this.tablaSimbolos.getLast().containsKey(id.getNombre());
+        for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
+            if (this.tablaSimbolos.get(i).containsKey(id.getNombre())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isVariableDeclared(final String nombre) {
-        return this.tablaSimbolos.getLast().containsKey(nombre);
+        for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
+            if (this.tablaSimbolos.get(i).containsKey(nombre)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public void setUsedId(String nombre) {
+    public void setUsedId(final String nombre) {
         for (HashMap<String, Id> contexto : this.tablaSimbolos) {
             for (Id id : contexto.values()) {
                 if (id.getNombre().equals(nombre))
                     id.setUsado(true);
             }
         }
+    }
+
+    public Funcion getFirmaFuncion(final Funcion function) {
+        Id id = this.tablaSimbolos.getFirst().get(function.getNombre());
+        
+        if (id instanceof Funcion)
+            return (Funcion) id;
+        else
+            return null; 
     }
 
     public void print() {

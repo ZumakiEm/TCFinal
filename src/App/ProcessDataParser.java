@@ -1,6 +1,5 @@
 import java.util.LinkedList;
 import org.antlr.v4.runtime.ParserRuleContext;
-
 import SimbolTable.*;
 
 public class ProcessDataParser {
@@ -68,7 +67,7 @@ public class ProcessDataParser {
             
             // si hay al menos 2 parametros en la funcion declarada
             if (paramDeclCtx.param_declaracion() != null) {
-                Id param = new Variable(paramDeclCtx.tipos().getText(), paramDeclCtx.ID().getText());
+                Id param = new Variable(paramDeclCtx.ID().getText(), paramDeclCtx.tipos().getText());
                 parametros.add(param);
 
                 return getParametros(paramDeclCtx.param_declaracion(), parametros);
@@ -76,11 +75,32 @@ public class ProcessDataParser {
             // si no hay otra regla ParamDeclaracion (es el ultimo parametro de la funcion definida)
             // ej: int suma(int x, int y) -> (int y) es el ultimo parametro que se guardaria en la tabla
             else {
-                Id param = new Variable(paramDeclCtx.tipos().getText(), paramDeclCtx.ID().getText());
+                Id param = new Variable(paramDeclCtx.ID().getText(), paramDeclCtx.tipos().getText());
                 parametros.add(param);
 
                 return parametros;
             }
         }
+    }
+
+    public static boolean validarFuncion(Funcion funcion, RulesParser.Declaracion_funcionContext ctx) {
+        TablaSimbolos tablaSimbolos = TablaSimbolos.getInstance();
+
+        if (tablaSimbolos.getFirmaFuncion(funcion) != null) {
+            //parser de error
+            return false;
+        }
+
+        if (tablaSimbolos.getContext() != 1) {
+            //parser de error
+            return false;
+        }
+
+        if (tablaSimbolos.isVariableDeclared(funcion)) {
+            //parser de error
+            return false;
+        }
+
+        return true;
     }
 }

@@ -1,7 +1,7 @@
 //package App;
 
 import SimbolTable.*;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import java.util.LinkedList;
 
 public class MiListener extends RulesBaseListener {
     private TablaSimbolos tablaSimbolos = TablaSimbolos.getInstance();
@@ -10,26 +10,25 @@ public class MiListener extends RulesBaseListener {
     public MiListener() {
         cantidadNodos = 0;
     }
-
     @Override
     public void enterInstruccion(RulesParser.InstruccionContext ctx) {
-        // cantidadNodos++;
-        // System.out.println("Encontre una instruccion " + ctx.getText() );
+        //cantidadNodos++;
+        //System.out.println("Encontre una instruccion " + ctx.getText() );
     }
 
-    @Override
+    @Override 
     public void enterAmbito(RulesParser.AmbitoContext ctx) {
         cantidadNodos++;
-        // System.out.println("contexto nuevo " + ctx.getParent() );
-        // System.out.println(" --> " + ctx.getParent().getText() );
-        // System.out.println("\r\n");
+        //System.out.println("contexto nuevo " + ctx.getParent() );
+        //System.out.println("    --> " + ctx.getParent().getText() );
+        //System.out.println("\r\n");
 
         this.tablaSimbolos.addContext();
 
         if (ctx.getParent().getClass().equals(RulesParser.Definicion_funcionContext.class)) {
             RulesParser.Definicion_funcionContext fnctx = (RulesParser.Definicion_funcionContext) ctx.getParent();
             Funcion funcion = ProcessDataParser.getDataFuncion(fnctx);
-
+            
             this.tablaSimbolos.addFuncion(funcion);
 
             if (fnctx.param_definicion().getChildCount() != 0) {
@@ -60,6 +59,11 @@ public class MiListener extends RulesBaseListener {
             }
             lista = lista.lista_declaracion();
         }
+    }
+
+    @Override
+    public void exitLista_declaracion(RulesParser.Lista_declaracionContext ctx) {
+        System.out.println("\nlistas-> " + (ctx.lista_declaracion() == null));
     }
 
     @Override
@@ -95,13 +99,46 @@ public class MiListener extends RulesBaseListener {
         }
     }
 
-    @Override
-    public void visitTerminal(TerminalNode node) {
-        // System.out.println("Info del token: " + node.getSymbol() );
-        // System.out.println(" '--> Token: " + node.getSymbol().getText() );
-        // System.out.println(" '--> N° token: " + node.getSymbol().getType() );
-        // System.out.println("\r\n");
+    @Override 
+    public void exitDeclaracion_funcion(RulesParser.Declaracion_funcionContext ctx) {
+        Funcion funcion = new Funcion(ctx.tipos().getText(), ctx.ID().getText());
+        LinkedList<Id> paramFuncion = new LinkedList<Id>();
+
+        if (ProcessDataParser.validarFuncion(funcion, ctx)) {
+            if(!ctx.param_declaracion().isEmpty()) {
+                this.tablaSimbolos.addContext();
+                paramFuncion = ProcessDataParser.getParametros(ctx.param_declaracion(), paramFuncion);
+                
+                for (Id id : paramFuncion) {
+                    if (id.getNombre() != "") {
+                        if (this.tablaSimbolos.isVariableDeclared(id)) {}//parser de error
+
+                        this.tablaSimbolos.addId(id);
+                    }
+                }
+
+                this.tablaSimbolos.removeContext();
+            }
+
+            funcion.setParametros(paramFuncion);
+            this.tablaSimbolos.addFuncion(funcion);
+        }
     }
+
+    @Override
+    public void exitDefinicion_funcion(RulesParser.Definicion_funcionContext ctx) {
+        if (!ctx.ID().getText().equals("main")){
+
+            if (ctx.ambito().instrucciones() != null) {
+                if (ctx.ambito().instrucciones().instruccion().retorno() == null) {
+                    // parser de error
+                }
+                else if (!ctx.tipos().getText().equals("void")){
+                        //parser de error
+                    }
+                }
+            }
+    } 
 
     @Override
     public String toString() {

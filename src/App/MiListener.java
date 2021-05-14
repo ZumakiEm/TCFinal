@@ -5,10 +5,12 @@ import java.util.LinkedList;
 
 public class MiListener extends RulesBaseListener {
     private TablaSimbolos tablaSimbolos = TablaSimbolos.getInstance();
+    RulesParser parser;
     private int cantidadNodos;
 
-    public MiListener() {
+    public MiListener(RulesParser parser) {
         cantidadNodos = 0;
+        this.parser = parser;
     }
     @Override
     public void enterInstruccion(RulesParser.InstruccionContext ctx) {
@@ -23,8 +25,6 @@ public class MiListener extends RulesBaseListener {
         //System.out.println("    --> " + ctx.getParent().getText() );
         //System.out.println("\r\n");
 
-        this.tablaSimbolos.addContext();
-
         if (ctx.getParent().getClass().equals(RulesParser.Definicion_funcionContext.class)) {
             RulesParser.Definicion_funcionContext fnctx = (RulesParser.Definicion_funcionContext) ctx.getParent();
             Funcion funcion = ProcessDataParser.getDataFuncion(fnctx);
@@ -36,6 +36,9 @@ public class MiListener extends RulesBaseListener {
                     this.tablaSimbolos.addId(param);
                 }
             }
+        }
+        else {
+            this.tablaSimbolos.addContext();
         }
     }
 
@@ -54,7 +57,7 @@ public class MiListener extends RulesBaseListener {
                     this.tablaSimbolos.addId(id);
                 }
                 else {
-                    // aca va el error
+                    //parser de error -> variable duplicada
                 }
             }
             lista = lista.lista_declaracion();
@@ -87,7 +90,7 @@ public class MiListener extends RulesBaseListener {
                     this.tablaSimbolos.addId(variable);
                 }
                 else {
-                    //parser de error
+                    //parser de error -> variable duplicada
                 }
             }    
         }
@@ -95,13 +98,19 @@ public class MiListener extends RulesBaseListener {
             this.tablaSimbolos.setUsedId(ctx.ID().getText());
         }
         else {
-            //parser de error
+            //parser de error -> variable no declarada
         }
     }
 
     @Override 
     public void exitDeclaracion_funcion(RulesParser.Declaracion_funcionContext ctx) {
-        Funcion funcion = new Funcion(ctx.tipos().getText(), ctx.ID().getText());
+        Funcion funcion = null;
+
+        if (ctx.tipos() != null)
+            funcion = new Funcion(ctx.tipos().getText(), ctx.ID().getText());
+        else
+            funcion = new Funcion(ctx.tipo_void().getText(), ctx.ID().getText());
+
         LinkedList<Id> paramFuncion = new LinkedList<Id>();
 
         if (ProcessDataParser.validarFuncion(funcion, ctx)) {
@@ -111,7 +120,9 @@ public class MiListener extends RulesBaseListener {
                 
                 for (Id id : paramFuncion) {
                     if (id.getNombre() != "") {
-                        if (this.tablaSimbolos.isVariableDeclared(id)) {}//parser de error
+                        if (this.tablaSimbolos.isVariableDeclared(id)) {
+                            //parser de error --> variable ya declarada
+                        }
 
                         this.tablaSimbolos.addId(id);
                     }
@@ -130,15 +141,76 @@ public class MiListener extends RulesBaseListener {
         if (!ctx.ID().getText().equals("main")){
 
             if (ctx.ambito().instrucciones() != null) {
-                if (ctx.ambito().instrucciones().instruccion().retorno() == null) {
-                    // parser de error
-                }
-                else if (!ctx.tipos().getText().equals("void")){
-                        //parser de error
+                RulesParser.InstruccionesContext inst = ctx.ambito().instrucciones();
+                while(inst != null) {
+                    if (inst.instruccion() != null){
+                        if(inst.instruccion().retorno() != null) {
+                            // encontre retorno
+                            System.out.println("hay return");
+                            if (ctx.tipos() != null) {
+                                if(inst.instruccion().retorno().operaciones() == null) {
+                                    // parser de error --> falta valor de return
+                                    System.out.println("hay return sin valor");
+                                    return;
+                                }
+                                System.out.println("hay return con operacion");
+                            }
+                            else if(inst.instruccion().retorno().operaciones() != null) {
+                                // parser de error --> return con operacion en funcion void
+                            }
+                            return;
+                        }
                     }
+                    inst = inst.instrucciones();
                 }
+                // si no tiene return valido que tipo funcion sea void
+                if (!ctx.tipos().getText().equals("void")){
+                    System.out.println("no es void, error");
+                    return ;
+                    //parser de error
+                }
+                System.out.println("es void");
             }
-    } 
+        }
+    }
+    @Override 
+    public void exitFuncion(RulesParser.FuncionContext ctx) {
+        String functionName = ctx.ID().getText();
+        int paramCount = 0;
+
+        //si tiene parametros...
+        if (ProcessDataParser.getFactores(ctx.parametros(), this.parser) != null) {
+            paramCount = ProcessDataParser.getFactores(ctx.parametros(), this.parser).size();
+        }
+
+        Id funcion = this.tablaSimbolos.searchVariable(functionName);
+        if (funcion == null){
+            // id no declarado
+            //error.implicitDeclaration(ctx.getStart().getLine(), functionName);
+            return;
+        }
+        
+        if (!(funcion instanceof Funcion)){
+            // duplicacion de id
+            //error.callingNotFunction(ctx.getStart().getLine(), functionName);
+            return;
+
+        }
+        
+        if (paramCount < ((Funcion) funcion).getParametros().size()) {
+            //faltan argumentos
+            //error.tooFewArguments(ctx.getStart().getLine(), functionName);
+            return;
+        } 
+        
+        if (paramCount > ((Funcion) funcion).getParametros().size()) {
+            //sobran argumentos
+            //error.tooManyArguments(ctx.getStart().getLine(), functionName);
+            return;
+        }
+        
+        funcion.setUsado(true);
+    }
 
     @Override
     public String toString() {

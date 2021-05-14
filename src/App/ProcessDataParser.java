@@ -1,15 +1,22 @@
 import java.util.LinkedList;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.xpath.XPath;
 import SimbolTable.*;
 
 public class ProcessDataParser {
     
     public static Funcion getDataFuncion(RulesParser.Definicion_funcionContext ctx) {
         TablaSimbolos tablaSimbolos = TablaSimbolos.getInstance();
+        String tipo;
 
-        String tipo = ctx.tipos().getText();
+        if(ctx.tipos() != null)
+            tipo = ctx.tipos().getText();
+        else
+            tipo = ctx.tipo_void().getText();
+
         String nombre = ctx.ID().getText();
-
         Funcion funcion = new Funcion(tipo, nombre);
 
         LinkedList<Id> parametros = new LinkedList<>();
@@ -35,8 +42,6 @@ public class ProcessDataParser {
             System.out.println(" ->"+ (aux != null) +"<-");
         }
 
-        //System.out.println(" -> ("+(ctx.param_definicion().children == null)+") <- ");
-        //System.out.println(" -> "+ctx.param_definicion().children+" <- ");
         return funcion;
         //if(ctx.param_definicion())
     }
@@ -80,6 +85,19 @@ public class ProcessDataParser {
 
                 return parametros;
             }
+        }
+    }
+
+    public static LinkedList<RulesParser.FactorContext> getFactores(ParseTree parseTree, Parser parser) {
+        LinkedList<RulesParser.FactorContext> factores = new LinkedList<RulesParser.FactorContext>();
+        
+        for (ParseTree ctx : XPath.findAll(parseTree, "//factor", parser)) {
+            factores.add((RulesParser.FactorContext) ctx);
+        }
+        if (factores.size() > 0) {
+            return factores;
+        } else{
+            return null;
         }
     }
 

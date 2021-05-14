@@ -52,10 +52,10 @@ public class Funcion extends Id {
         funcion += ")";
 
         if(this.isUsado()) {
-            //funcion += " (funcion usada)";
+            funcion += " (funcion usada)";
         }
         else {
-            //funcion += " (funcion SIN usar)";
+            funcion += " (funcion SIN usar)";
         }
 
         return funcion;

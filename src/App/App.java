@@ -20,10 +20,14 @@ public class App {
         
         // create a parser that feeds off the tokens buffer
         RulesParser parser = new RulesParser(tokens);
+                
+        // Solicito al parser que comience indicando una regla gramatical
+        // En este caso la regla es el simbolo inicial
+        //parser.programa();
 
         /* CODIGO CORRESPONDIENTE AL USO DE LISTENER */
         // Creo el objeto que tiene los Listeners
-        RulesBaseListener escucha = new MiListener();
+        RulesBaseListener escucha = new MiListener(parser);
 
         // Conecto el objeto con Listeners al parser
         parser.addParseListener(escucha);

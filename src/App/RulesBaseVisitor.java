@@ -1,4 +1,4 @@
-// Generated from /home/zumakiem/Documentos/TPFinal/src/App/Rules.g4 by ANTLR 4.8
+// Generated from c:\Users\diego\OneDrive\Documentos\facultad\TC\TPFinal\src\App\Rules.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -17,6 +17,13 @@ public class RulesBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitTipos(RulesParser.TiposContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitTipo_void(RulesParser.Tipo_voidContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

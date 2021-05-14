@@ -1,4 +1,4 @@
-// Generated from /home/zumakiem/Documentos/TPFinal/src/App/Rules.g4 by ANTLR 4.8
+// Generated from c:\Users\diego\OneDrive\Documentos\facultad\TC\TPFinal\src\App\Rules.g4 by ANTLR 4.8
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -22,6 +22,18 @@ public class RulesBaseListener implements RulesListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTipos(RulesParser.TiposContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTipo_void(RulesParser.Tipo_voidContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTipo_void(RulesParser.Tipo_voidContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

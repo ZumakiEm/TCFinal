@@ -1,1 +1,10 @@
-int a = 0, b, c, d = 1;
+
+int pepe(int x, int p);
+
+int pepe = 3;
+
+int pepe(int x, int p) {
+    int a = 3;
+    a = pepe(2, 4);
+    return a;
+}

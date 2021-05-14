@@ -1,4 +1,4 @@
-// Generated from /home/zumakiem/Documentos/TPFinal/src/App/Rules.g4 by ANTLR 4.8
+// Generated from c:\Users\diego\OneDrive\Documentos\facultad\TC\TPFinal\src\App\Rules.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -16,6 +16,16 @@ public interface RulesListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTipos(RulesParser.TiposContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link RulesParser#tipo_void}.
+	 * @param ctx the parse tree
+	 */
+	void enterTipo_void(RulesParser.Tipo_voidContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link RulesParser#tipo_void}.
+	 * @param ctx the parse tree
+	 */
+	void exitTipo_void(RulesParser.Tipo_voidContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link RulesParser#constante}.
 	 * @param ctx the parse tree

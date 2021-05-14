@@ -25,6 +25,7 @@ INT : 'int';
 FLOAT : 'float';
 DOUBLE : 'double';
 CHAR : 'char';
+VOID : 'void';
 
 //ciclos
 FOR : 'for';
@@ -80,6 +81,8 @@ tipos : INT
       | CHAR
       ;
 
+tipo_void : VOID;
+
 constante : NUMERO
           | FLOTANTE
           | CARACTER
@@ -115,14 +118,14 @@ instruccion : declaracion PYC
             | retorno PYC
             ;
 
-declaracion_funcion : tipos ID PA param_declaracion PC
+declaracion_funcion : (tipos | tipo_void) ID PA param_declaracion PC
 					;
 
 param_declaracion : tipos (ID | )
 		   		  | tipos (ID | ) COMA param_declaracion
 		   		  ;
 
-definicion_funcion: tipos ID PA param_definicion PC ambito
+definicion_funcion: (tipos | tipo_void) ID PA param_definicion PC ambito
 				  ;
 
 param_definicion : tipos ID

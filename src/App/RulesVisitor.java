@@ -1,4 +1,4 @@
-// Generated from /home/zumakiem/Documentos/TPFinal/src/App/Rules.g4 by ANTLR 4.8
+// Generated from c:\Users\diego\OneDrive\Documentos\facultad\TC\TPFinal\src\App\Rules.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -15,6 +15,12 @@ public interface RulesVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTipos(RulesParser.TiposContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link RulesParser#tipo_void}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTipo_void(RulesParser.Tipo_voidContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link RulesParser#constante}.
 	 * @param ctx the parse tree

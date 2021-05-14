@@ -1,4 +1,3 @@
-  
 public class ErrorReporter {
     private static ErrorReporter instance = null;
 
@@ -10,6 +9,6 @@ public class ErrorReporter {
     }
 
     public static void printError(int line, String error) {
-        System.out.println("ERROR\tLine " + line + error);
+        System.out.println("ERROR at line " + line + " " +error);
     }
 }

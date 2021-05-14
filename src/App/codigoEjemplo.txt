@@ -1,10 +1,10 @@
 
 int pepe(int x, int p);
-
-int pepe = 3;
+int coco(int x, int y);
 
 int pepe(int x, int p) {
     int a = 3;
     a = pepe(2, 4);
+    int b = coco(a,s,c,v);
     return a;
 }

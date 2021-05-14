@@ -1,10 +1,9 @@
-//package App;
-
 import SimbolTable.*;
 import java.util.LinkedList;
 
 public class MiListener extends RulesBaseListener {
     private TablaSimbolos tablaSimbolos = TablaSimbolos.getInstance();
+    private ErrorReporter errorReporter = ErrorReporter.getInstance();
     RulesParser parser;
     private int cantidadNodos;
 
@@ -58,6 +57,7 @@ public class MiListener extends RulesBaseListener {
                 }
                 else {
                     //parser de error -> variable duplicada
+                    this.errorReporter.printError(ctx.getStop().getLine(), "duplicated variable");
                 }
             }
             lista = lista.lista_declaracion();
@@ -91,6 +91,7 @@ public class MiListener extends RulesBaseListener {
                 }
                 else {
                     //parser de error -> variable duplicada
+                    this.errorReporter.printError(ctx.getStop().getLine(), "duplicated variable "+ variable.getNombre());
                 }
             }    
         }
@@ -99,6 +100,7 @@ public class MiListener extends RulesBaseListener {
         }
         else {
             //parser de error -> variable no declarada
+            this.errorReporter.printError(ctx.getStop().getLine(), "duplicated "+ ctx.ID().getText() +" is not declared");
         }
     }
 
@@ -122,15 +124,14 @@ public class MiListener extends RulesBaseListener {
                     if (id.getNombre() != "") {
                         if (this.tablaSimbolos.isVariableDeclared(id)) {
                             //parser de error --> variable ya declarada
+                            this.errorReporter.printError(ctx.getStop().getLine(), "the variable "+ id.getNombre() +" has already been declared");
                         }
 
                         this.tablaSimbolos.addId(id);
                     }
                 }
-
                 this.tablaSimbolos.removeContext();
             }
-
             funcion.setParametros(paramFuncion);
             this.tablaSimbolos.addFuncion(funcion);
         }
@@ -139,24 +140,22 @@ public class MiListener extends RulesBaseListener {
     @Override
     public void exitDefinicion_funcion(RulesParser.Definicion_funcionContext ctx) {
         if (!ctx.ID().getText().equals("main")){
-
             if (ctx.ambito().instrucciones() != null) {
                 RulesParser.InstruccionesContext inst = ctx.ambito().instrucciones();
                 while(inst != null) {
                     if (inst.instruccion() != null){
                         if(inst.instruccion().retorno() != null) {
                             // encontre retorno
-                            System.out.println("hay return");
                             if (ctx.tipos() != null) {
                                 if(inst.instruccion().retorno().operaciones() == null) {
                                     // parser de error --> falta valor de return
-                                    System.out.println("hay return sin valor");
+                                    this.errorReporter.printError(ctx.getStop().getLine(), "must return a value");
                                     return;
                                 }
-                                System.out.println("hay return con operacion");
                             }
                             else if(inst.instruccion().retorno().operaciones() != null) {
                                 // parser de error --> return con operacion en funcion void
+                                this.errorReporter.printError(ctx.getStop().getLine(), "void function should not return a value");
                             }
                             return;
                         }
@@ -165,11 +164,10 @@ public class MiListener extends RulesBaseListener {
                 }
                 // si no tiene return valido que tipo funcion sea void
                 if (!ctx.tipos().getText().equals("void")){
-                    System.out.println("no es void, error");
-                    return ;
                     //parser de error
+                    this.errorReporter.printError(ctx.getStop().getLine(), "must return a value");
+                    return ;   
                 }
-                System.out.println("es void");
             }
         }
     }
@@ -186,26 +184,26 @@ public class MiListener extends RulesBaseListener {
         Id funcion = this.tablaSimbolos.searchVariable(functionName);
         if (funcion == null){
             // id no declarado
-            //error.implicitDeclaration(ctx.getStart().getLine(), functionName);
+            this.errorReporter.printError(ctx.getStop().getLine(), "the function "+ functionName +" has not been declared");
             return;
         }
         
         if (!(funcion instanceof Funcion)){
             // duplicacion de id
-            //error.callingNotFunction(ctx.getStart().getLine(), functionName);
+            this.errorReporter.printError(ctx.getStop().getLine(), "the function "+ functionName +" has already been declared");
             return;
 
         }
         
         if (paramCount < ((Funcion) funcion).getParametros().size()) {
             //faltan argumentos
-            //error.tooFewArguments(ctx.getStart().getLine(), functionName);
+            this.errorReporter.printError(ctx.getStop().getLine(), "the function "+ functionName +" expected "+ ((Funcion) funcion).getParametros().size() +" but "+ paramCount +" were given");
             return;
         } 
         
         if (paramCount > ((Funcion) funcion).getParametros().size()) {
             //sobran argumentos
-            //error.tooManyArguments(ctx.getStart().getLine(), functionName);
+            this.errorReporter.printError(ctx.getStop().getLine(), "the function "+ functionName +" expected "+ ((Funcion) funcion).getParametros().size() +" but "+ paramCount +" were given");
             return;
         }
         

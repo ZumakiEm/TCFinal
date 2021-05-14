@@ -19,12 +19,6 @@ public class MiListener extends RulesBaseListener {
     @Override 
     public void enterAmbito(RulesParser.AmbitoContext ctx) {
         cantidadNodos++;
-        //System.out.println("contexto nuevo " + ctx.getParent() );
-        //System.out.println("    --> " + ctx.getParent().getText() );
-        //System.out.println("\r\n");
-
-        this.tablaSimbolos.addContext();
-
         if (ctx.getParent().getClass().equals(RulesParser.Definicion_funcionContext.class)) {
             RulesParser.Definicion_funcionContext fnctx = (RulesParser.Definicion_funcionContext) ctx.getParent();
             Funcion funcion = ProcessDataParser.getDataFuncion(fnctx);
@@ -130,15 +124,26 @@ public class MiListener extends RulesBaseListener {
         if (!ctx.ID().getText().equals("main")){
 
             if (ctx.ambito().instrucciones() != null) {
-                if (ctx.ambito().instrucciones().instruccion().retorno() == null) {
-                    // parser de error
-                }
-                else if (!ctx.tipos().getText().equals("void")){
-                        //parser de error
+                RulesParser.InstruccionesContext inst = ctx.ambito().instrucciones();
+                while(inst != null) {
+                    if (inst.instruccion() != null){
+                        if(inst.instruccion().retorno() != null) {
+                            // encontre retorno
+                            System.out.println("hay return");
+                            return;
+                        }
                     }
+                    inst = inst.instrucciones();
                 }
+                if (!ctx.tipos().getText().equals("void")){
+                    System.out.println("no es void, error");
+                    return;
+                    //parser de error
+                }
+                System.out.println("es void");
             }
-    } 
+        }
+    }
 
     @Override
     public String toString() {

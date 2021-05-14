@@ -1,1 +1,4 @@
-int a = 0, b, c, d = 1;
+int pepe(int x, int z);
+
+int pepe(int x, int z) {
+}

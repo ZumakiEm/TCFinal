@@ -13,7 +13,7 @@ public class MiListener extends RulesBaseListener {
     }
     @Override
     public void enterInstruccion(RulesParser.InstruccionContext ctx) {
-        //cantidadNodos++;
+        cantidadNodos++;
         //System.out.println("Encontre una instruccion " + ctx.getText() );
     }
 
@@ -29,7 +29,7 @@ public class MiListener extends RulesBaseListener {
             Funcion funcion = ProcessDataParser.getDataFuncion(fnctx);
             
             this.tablaSimbolos.addFuncion(funcion);
-
+            this.tablaSimbolos.addContext();
             if (fnctx.param_definicion().getChildCount() != 0) {
                 for (Id param : funcion.getParametros()) {
                     this.tablaSimbolos.addId(param);
@@ -218,5 +218,6 @@ public class MiListener extends RulesBaseListener {
     @Override
     public void exitPrograma(RulesParser.ProgramaContext ctx) {
         this.tablaSimbolos.print();
+        this.tablaSimbolos.removeContext();
     }
 }

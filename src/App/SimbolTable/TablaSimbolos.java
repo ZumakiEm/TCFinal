@@ -57,8 +57,7 @@ public class TablaSimbolos
     public void addId(final Id id) {
         this.tablaSimbolos.getLast().put(id.getNombre(), id);
         System.out.println("ID con el nombre: " + id.getNombre() + " fue agregado a la tabla en el contexto: " + this.tablaSimbolos.size());
-        int idx = this.tablaSimbolosHistorica.size() - 1;
-        this.tablaSimbolosHistorica.get(idx).put(id.getNombre(), id);
+        this.tablaSimbolosHistorica.get(this.tablaSimbolosHistorica.size() - 1).put(id.getNombre(), id);
     }
     
     public Boolean asignacionId(final Id id) {

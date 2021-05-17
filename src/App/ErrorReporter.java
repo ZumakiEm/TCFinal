@@ -8,7 +8,7 @@ public class ErrorReporter {
         return instance;
     }
 
-    public static void printError(int line, String error) {
+    public void printError(int line, String error) {
         System.out.println("ERROR at line " + line + " " +error);
     }
 }

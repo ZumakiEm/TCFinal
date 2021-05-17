@@ -29,7 +29,6 @@ public class ProcessDataParser {
             for (int i = 0; i < parametros.size(); i++) {
                 if (tablaSimbolos.isVariableDeclared(parametros.get(i)))
                     System.out.println(" Variable declarada!!!!! \r\n");
-                
                 tablaSimbolos.addParamFuncion(parametros.get(i));
             }
         }
@@ -39,7 +38,6 @@ public class ProcessDataParser {
         //contexto global
         if (tablaSimbolos.getContext() == 1) {
             Id aux = tablaSimbolos.searchId(funcion);
-            System.out.println(" ->"+ (aux != null) +"<-");
         }
 
         return funcion;

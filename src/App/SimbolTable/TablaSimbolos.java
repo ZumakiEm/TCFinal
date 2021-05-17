@@ -6,12 +6,8 @@ import java.util.LinkedList;
 public class TablaSimbolos
 {
     private LinkedList<HashMap<String, Id>> tablaSimbolos;
+    private LinkedList<HashMap<String, Id>> tablaSimbolosHistorica;
     private static TablaSimbolos instance;
-    
-    public TablaSimbolos() {
-        this.tablaSimbolos = new LinkedList<HashMap<String, Id>>();
-        this.addContext();
-    }
 
     public static TablaSimbolos getInstance() {
         if(instance == null)
@@ -19,9 +15,17 @@ public class TablaSimbolos
 
         return instance;
     }
+    
+    public TablaSimbolos() {
+        this.tablaSimbolos = new LinkedList<HashMap<String, Id>>();
+        this.tablaSimbolosHistorica = new LinkedList<HashMap<String, Id>>();
+        this.addContext();
+    }
 
     public void addContext() {
-        this.tablaSimbolos.add(new HashMap<String, Id>());
+        HashMap<String, Id> context = new HashMap<String, Id>();        
+        this.tablaSimbolos.add(context);
+        this.tablaSimbolosHistorica.add(context);
     }
 
     public int getContext() {
@@ -53,22 +57,32 @@ public class TablaSimbolos
     public void addId(final Id id) {
         this.tablaSimbolos.getLast().put(id.getNombre(), id);
         System.out.println("ID con el nombre: " + id.getNombre() + " fue agregado a la tabla en el contexto: " + this.tablaSimbolos.size());
+        int idx = this.tablaSimbolosHistorica.size() - 1;
+        this.tablaSimbolosHistorica.get(idx).put(id.getNombre(), id);
     }
     
     public Boolean asignacionId(final Id id) {
         for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
             if(this.tablaSimbolos.get(i).containsKey(id.getNombre())) {
                 this.tablaSimbolos.get(i).replace(id.getNombre(), id);
+                this.tablaSimbolosHistorica.get(i).replace(id.getNombre(), id);
                 return true;
             }
         }
-
         return false;
     }
 
     public void addFuncion(final Funcion funcion) {
         this.tablaSimbolos.getLast().put(funcion.getNombre(), funcion);
         System.out.println("FUNCION con el nombre: " + funcion.getNombre() + " fue agregada a la tabla en el contexto: " + this.tablaSimbolos.size());
+        if (this.tablaSimbolos.size() == 0){
+            if (this.tablaSimbolosHistorica.size() > 1){
+                this.tablaSimbolosHistorica.get(this.tablaSimbolosHistorica.size() - 2).put(funcion.getNombre(), funcion);
+            }
+            else {
+                this.tablaSimbolosHistorica.get(this.tablaSimbolosHistorica.size() - 1).put(funcion.getNombre(), funcion);
+            }
+        }
     }
 
     public void addParamFuncion(final Id id) {
@@ -82,7 +96,6 @@ public class TablaSimbolos
                 return true;
             }
         }
-
         return false;
     }
 
@@ -92,7 +105,6 @@ public class TablaSimbolos
                 return true;
             }
         }
-
         return false;
     }
 
@@ -124,6 +136,15 @@ public class TablaSimbolos
             }
             System.out.println("}");
         }
+        
+        ctx = 1;
+        System.out.println("\n=== HISTORICAL SYMBOL TABLE ===");
+        for (HashMap<String, Id> contexto : this.tablaSimbolosHistorica) {
+            System.out.println("Contexto: " + ctx++ + " {");
+            for (Id id : contexto.values()) {
+                System.out.println("    " + id.toString());
+            }
+            System.out.println("}");
+        }       
     }
-
 }

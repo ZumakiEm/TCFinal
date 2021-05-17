@@ -1,10 +1,11 @@
-
 int pepe(int x, int p);
-int coco(int x, int y);
+
+int main() {
+    int z = 3;
+    return 0;
+}
 
 int pepe(int x, int p) {
     int a = 3;
-    a = pepe(2, 4);
-    int b = coco(a,s,c,v);
     return a;
 }

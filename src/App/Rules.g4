@@ -123,6 +123,7 @@ declaracion_funcion : (tipos | tipo_void) ID PA param_declaracion PC
 
 param_declaracion : tipos (ID | )
 		   		  | tipos (ID | ) COMA param_declaracion
+                  |
 		   		  ;
 
 definicion_funcion: (tipos | tipo_void) ID PA param_definicion PC ambito

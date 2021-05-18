@@ -60,4 +60,20 @@ public class Funcion extends Id {
 
         return funcion;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Funcion firmaFuncion = (Funcion) obj;
+        
+        if (this.parametros.size() != firmaFuncion.getParametros().size())
+            return false;
+        
+        else {
+            for (int i = 0; i < this.parametros.size(); i++) {
+                if (!this.parametros.get(i).getTipo().equals(firmaFuncion.getParametros().get(i).getTipo()))
+                    return false;
+            }
+            return true;
+        }   
+    }
 }

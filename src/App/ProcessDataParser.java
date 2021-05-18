@@ -9,6 +9,7 @@ public class ProcessDataParser {
     
     public static Funcion getDataFuncion(RulesParser.Definicion_funcionContext ctx) {
         TablaSimbolos tablaSimbolos = TablaSimbolos.getInstance();
+        ErrorReporter error = ErrorReporter.getInstance();
         String tipo;
 
         if(ctx.tipos() != null)
@@ -23,7 +24,7 @@ public class ProcessDataParser {
 
         //si tiene parametros declarados
         if (ctx.param_definicion().getChildCount() != 0) {
-            tablaSimbolos.addContext();
+            tablaSimbolos.addParamForContext();
             parametros = getParametros(ctx.param_definicion(), parametros);
 
             for (int i = 0; i < parametros.size(); i++) {
@@ -31,13 +32,19 @@ public class ProcessDataParser {
                     System.out.println(" Variable declarada!!!!! \r\n");
                 tablaSimbolos.addParamFuncion(parametros.get(i));
             }
+
+            tablaSimbolos.removeContext();
         }
 
         funcion.setParametros(parametros);
 
         //contexto global
         if (tablaSimbolos.getContext() == 1) {
-            Id aux = tablaSimbolos.searchId(funcion);
+            Funcion firmaFuncion = tablaSimbolos.getFirmaFuncion(funcion);
+
+            if (firmaFuncion != null && !funcion.equals(firmaFuncion)) {
+                error.printError(ctx.getStart().getLine(), "Conflicting types for " + funcion.getNombre());
+            }
         }
 
         return funcion;
@@ -49,6 +56,11 @@ public class ProcessDataParser {
         if(ruleCtx.getClass().equals(RulesParser.Param_definicionContext.class)) {
             RulesParser.Param_definicionContext paramDefCtx = (RulesParser.Param_definicionContext) ruleCtx;
             
+            // si no tiene parametros devuelve lista vacia
+            if (paramDefCtx == null) {
+                return parametros;
+            }
+
             // si hay al menos 2 parametros en la funcion definida
             if (paramDefCtx.param_definicion() != null) {
                 Id param = new Variable(paramDefCtx.ID().getText(), paramDefCtx.tipos().getText());

@@ -25,7 +25,12 @@ public class TablaSimbolos
     public void addContext() {
         HashMap<String, Id> context = new HashMap<String, Id>();        
         this.tablaSimbolos.add(context);
+
         this.tablaSimbolosHistorica.add(context);
+    }
+
+    public void addParamForContext() {
+        this.tablaSimbolos.add(new HashMap<String, Id>());
     }
 
     public int getContext() {

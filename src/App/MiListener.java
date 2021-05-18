@@ -91,7 +91,7 @@ public class MiListener extends RulesBaseListener {
                 }
                 else {
                     //parser de error -> variable duplicada
-                    this.errorReporter.printError(ctx.getStop().getLine(), "duplicated variable "+ variable.getNombre());
+                    this.errorReporter.printError(linea, "duplicated variable "+ variable.getNombre());
                 }
             }    
         }
@@ -117,7 +117,7 @@ public class MiListener extends RulesBaseListener {
 
         if (ProcessDataParser.validarFuncion(funcion, ctx)) {
             if(!ctx.param_declaracion().isEmpty()) {
-                this.tablaSimbolos.addContext();
+                this.tablaSimbolos.addParamForContext();
                 paramFuncion = ProcessDataParser.getParametros(ctx.param_declaracion(), paramFuncion);
                 
                 for (Id id : paramFuncion) {
@@ -217,7 +217,7 @@ public class MiListener extends RulesBaseListener {
 
     @Override
     public void exitPrograma(RulesParser.ProgramaContext ctx) {
-        this.tablaSimbolos.print();
         this.tablaSimbolos.removeContext();
+        this.tablaSimbolos.print();
     }
 }

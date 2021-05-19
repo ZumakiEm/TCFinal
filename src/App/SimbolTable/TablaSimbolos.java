@@ -61,7 +61,6 @@ public class TablaSimbolos
 
     public void addId(final Id id) {
         this.tablaSimbolos.getLast().put(id.getNombre(), id);
-        System.out.println("ID con el nombre: " + id.getNombre() + " fue agregado a la tabla en el contexto: " + this.tablaSimbolos.size());
         this.tablaSimbolosHistorica.get(this.tablaSimbolosHistorica.size() - 1).put(id.getNombre(), id);
     }
     
@@ -78,7 +77,6 @@ public class TablaSimbolos
 
     public void addFuncion(final Funcion funcion) {
         this.tablaSimbolos.getLast().put(funcion.getNombre(), funcion);
-        System.out.println("FUNCION con el nombre: " + funcion.getNombre() + " fue agregada a la tabla en el contexto: " + this.tablaSimbolos.size());
         if (this.tablaSimbolos.size() == 0){
             if (this.tablaSimbolosHistorica.size() > 1){
                 this.tablaSimbolosHistorica.get(this.tablaSimbolosHistorica.size() - 2).put(funcion.getNombre(), funcion);

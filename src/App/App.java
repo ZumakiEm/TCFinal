@@ -38,7 +38,9 @@ public class App {
 
         // Imprime estadisticas
         System.out.println(escucha);
-
+        if (!ErrorReporter.getInstance().thereIsError()){
+            // codigo de 3 direccion
+        }
         // Imprime el arbol obtenido
         //System.out.println(tree.toStringTree(parser));
 

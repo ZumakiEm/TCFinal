@@ -14,16 +14,11 @@ public class MiListener extends RulesBaseListener {
     @Override
     public void enterInstruccion(RulesParser.InstruccionContext ctx) {
         cantidadNodos++;
-        //System.out.println("Encontre una instruccion " + ctx.getText() );
     }
 
     @Override 
     public void enterAmbito(RulesParser.AmbitoContext ctx) {
         cantidadNodos++;
-        //System.out.println("contexto nuevo " + ctx.getParent() );
-        //System.out.println("    --> " + ctx.getParent().getText() );
-        //System.out.println("\r\n");
-
         if (ctx.getParent().getClass().equals(RulesParser.Definicion_funcionContext.class)) {
             RulesParser.Definicion_funcionContext fnctx = (RulesParser.Definicion_funcionContext) ctx.getParent();
             Funcion funcion = ProcessDataParser.getDataFuncion(fnctx);
@@ -65,11 +60,6 @@ public class MiListener extends RulesBaseListener {
             }
             lista = lista.lista_declaracion();
         }
-    }
-
-    @Override
-    public void exitLista_declaracion(RulesParser.Lista_declaracionContext ctx) {
-        System.out.println("\nlistas-> " + (ctx.lista_declaracion() == null));
     }
 
     @Override

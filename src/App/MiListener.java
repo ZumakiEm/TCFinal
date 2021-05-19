@@ -27,14 +27,17 @@ public class MiListener extends RulesBaseListener {
         if (ctx.getParent().getClass().equals(RulesParser.Definicion_funcionContext.class)) {
             RulesParser.Definicion_funcionContext fnctx = (RulesParser.Definicion_funcionContext) ctx.getParent();
             Funcion funcion = ProcessDataParser.getDataFuncion(fnctx);
+
+            if (!this.tablaSimbolos.isVariableDeclared(funcion))
+                this.tablaSimbolos.addFuncion(funcion);
             
-            this.tablaSimbolos.addFuncion(funcion);
             this.tablaSimbolos.addContext();
             if (fnctx.param_definicion().getChildCount() != 0) {
                 for (Id param : funcion.getParametros()) {
                     this.tablaSimbolos.addId(param);
                 }
             }
+            
         }
         else {
             this.tablaSimbolos.addContext();
@@ -126,8 +129,7 @@ public class MiListener extends RulesBaseListener {
                             //parser de error --> variable ya declarada
                             this.errorReporter.printError(ctx.getStop().getLine(), "the variable "+ id.getNombre() +" has already been declared");
                         }
-
-                        this.tablaSimbolos.addId(id);
+                        this.tablaSimbolos.addParamFuncion(id);
                     }
                 }
                 this.tablaSimbolos.removeContext();

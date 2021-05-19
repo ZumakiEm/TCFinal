@@ -2,10 +2,10 @@ int pepe(int x, int y);
 
 int main() {
     int z;
-    z = 0;
+    z = pepe(2, 5);
     return 0;
 }
 
-int pepe(int x, int y){
+int pepe(int x, int y) {
     return x;
 }

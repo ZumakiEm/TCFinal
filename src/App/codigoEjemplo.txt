@@ -7,5 +7,6 @@ int main() {
 }
 
 int pepe(int x, int y) {
+    x = y + a || 2 + 1;
     return x;
 }

@@ -12,7 +12,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.Trees;
 
-public class Visitor extends RuleBaseVisitor<String> {
+public class MiVisitor extends RulesBaseVisitor<String> {
     private int count_label;
     private int count_tmp;
     private String tmp_previous;
@@ -22,14 +22,14 @@ public class Visitor extends RuleBaseVisitor<String> {
     private HashMap<String, String> opposites;
     private String[] operators_logical;
 
-    public Visitor() {
-        this.oppositeComp = new HashMap<String, String>() {{
+    public MiVisitor() {
+        this.opposites = new HashMap<String, String>() {{
             put("!=", "==");
-            put("==", "!=")
+            put("==", "!=");
             put("<", ">=");
             put(">=", "<");
             put("<=", ">");
-            put(">", "<=");
+            put(">", "<=")
             ;
         }};
         this.operators_logical = new String[]{"&&", "||"};
@@ -53,15 +53,15 @@ public class Visitor extends RuleBaseVisitor<String> {
         List<ParseTree> operations = this.getNodes(t, RulesParser.RULE_factor);
         int count = 0;
         for (int i = 0; i < operations.size(); i++){
-            if((FactorContext) operations.get(i).PA() != null){
+            if(((RulesParser.FactorContext) operations.get(i)).PA() != null){
                 count++;
             }
         }
         int params = Trees.findAllRuleNodes(t, RulesParser.RULE_parametros).size();
         params = aux.size() == params ? 0 : params;
         for (int i = 0; i < aux.size() - params - count; i++) {
-            if(aux.get(i).getChild(0) instanceof DisyuncionContext){
-                nodes.add(((DisyuncionContext) aux.get(i)).conjuncion());
+            if(aux.get(i).getChild(0) instanceof RulesParser.DisyuncionContext){
+                nodes.add(((RulesParser.DisyuncionContext) aux.get(i)).conjuncion());
             }
             else {
                 nodes.add(aux.get(i));
@@ -71,7 +71,7 @@ public class Visitor extends RuleBaseVisitor<String> {
         return nodes;        
     }
 
-    private void processOperacion(OperacionContext ctx) {
+    private void processOperacion(RulesParser.OperacionesContext ctx) {
         String operator = "||";
         List<ParseTree> terminos; // separateOR
     }
@@ -80,13 +80,14 @@ public class Visitor extends RuleBaseVisitor<String> {
     public String visitAsignacion(RulesParser.AsignacionContext ctx) {
         List<ParseTree> fact = this.getNodes(ctx, RulesParser.RULE_factor);
         if(fact.size() == 1){
-            this.code += ctx.ID.getText() + " = " + fact.get(0).getText() + "\n";
+            this.code += ctx.ID().getText() + " = " + fact.get(0).getText() + "\n";
         }
         else {
             // aca cambia el codigo porque
             // en el g4 no tenemos una regla opal
             // de operacion pasamos directamente a disyuncion
-            OperacionContext ctx_opal = ctx.operacion()
+            RulesParser.OperacionesContext ctx_opal = ctx.operaciones();
         }
+        return null;
     }
 }

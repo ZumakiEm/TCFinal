@@ -361,14 +361,18 @@ public class MiVisitor extends RulesBaseVisitor<String> {
 
         RulesParser.Else_condicionalContext elseCtx = ctx.else_condicional();
         while(elseCtx != null) {
-            lblGo++;
+            if (!elseCtx.getText().equals("")) {
+                lblGo++;
+            }
             elseCtx = elseCtx.else_condicional();
         }
 
         elseCtx = ctx.else_condicional();
         while(elseCtx != null) {
-            this.code += "goto L" + lblGo + "\n";
-            
+            if (!elseCtx.getText().equals("")) {
+                // en caso de que no haya un else solo al final, evita el goto
+                this.code += "goto L" + lblGo + "\n";
+            }
             if (elseCtx.ELSE() != null) {
                 this.code += "L" + aux1 + "\n";
                 visitChildren(elseCtx.instruccion().ambito());
@@ -381,12 +385,12 @@ public class MiVisitor extends RulesBaseVisitor<String> {
                 this.code = this.code.replace(auxString, String.format("L%s if %s goto L%s", aux1, getOpossiteOperation(operation), ++this.count_label));
                 visitChildren(elseCtx.instruccion().ambito());
             }
-
             aux1++;
             elseCtx = elseCtx.else_condicional();
         }
 
         this.code += "L" + lblGo + "\n";
+        this.count_label = lblGo;
         
         return null;
     }

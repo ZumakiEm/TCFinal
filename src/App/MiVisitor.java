@@ -347,58 +347,47 @@ public class MiVisitor extends RulesBaseVisitor<String> {
     }
 
     @Override
-    public String visitCondicional(RulesParser.CondicionalContext ctx) {
-        LblCount++;
-        processOpal(ctx.operacion().get(0).opal());
+    public String visitIf_condicional(RulesParser.If_condicionalContext ctx) {
+        this.count_label++;
+        processOperacion(ctx.operaciones());
+        
         String auxString = getLastLine(this.code);
         String operation = auxString.substring(auxString.indexOf("=")+2);
-        this.code = this.code.replace(auxString, String.format("if %s goto L%s", getOpossiteOperation(operation), LblCount));
-        TmpCount--;
-        int lblGo = LblCount;
-        int aux1 = LblCount;
-        visitChildren(ctx.instruccion().get(0).bloque());
-        if (ctx.ELIF().size() > 0) { // If there's at least 1 else if block we iterate over all possible else if blocks
-            if (ctx.ELSE() == null){
-                lblGo = LblCount + ctx.ELIF().size();
-                this.code += String.format("goto L%s\n", lblGo);
-            } else{
-                lblGo = LblCount + ctx.ELIF().size() + 1;
-                this.code += String.format("goto L%s\n", lblGo);
+        this.code = this.code.replace(auxString, String.format("if %s goto L%s", getOpossiteOperation(operation), this.count_label));
+        this.count_tmp--;
+        int lblGo = this.count_label;
+        int aux1 = this.count_label;
+        visitChildren(ctx.instruccion().ambito());
+
+        RulesParser.Else_condicionalContext elseCtx = ctx.else_condicional();
+        while(elseCtx != null) {
+            lblGo++;
+            elseCtx = elseCtx.else_condicional();
+        }
+
+        elseCtx = ctx.else_condicional();
+        while(elseCtx != null) {
+            this.code += "goto L" + lblGo + "\n";
+            
+            if (elseCtx.ELSE() != null) {
+                this.code += "L" + aux1 + "\n";
+                visitChildren(elseCtx.instruccion().ambito());
             }
-            for (int i = 0; i < ctx.ELIF().size(); i++) {
-                processOpal(ctx.operacion().get(i+1).opal());
+            else if(elseCtx.ELSE_IF() != null){
+                processOperacion(elseCtx.operaciones());
+        
                 auxString = getLastLine(this.code);
                 operation = auxString.substring(auxString.indexOf("=")+2);
-                this.code = this.code.replace(auxString, String.format("L%s if %s goto L%s", aux1, getOpossiteOperation(operation), ++LblCount));
-                TmpCount--;
-                aux1 = LblCount;
-                visitChildren(ctx.instruccion().get(i+1).bloque());
-                if (i != ctx.ELIF().size()-1 && ctx.ELSE() == null){
-                    this.code += String.format("goto L%s\n", lblGo);
-                }
+                this.code = this.code.replace(auxString, String.format("L%s if %s goto L%s", aux1, getOpossiteOperation(operation), ++this.count_label));
+                visitChildren(elseCtx.instruccion().ambito());
             }
-            if (ctx.ELSE() == null){
-                this.code += String.format("L%s\n", LblCount);
-            }
+
+            aux1++;
+            elseCtx = elseCtx.else_condicional();
         }
-        if (ctx.ELSE() != null) { // If there's an else block
-            int elseAux = 0;
-            if (ctx.ELIF().size() == 0){
-                this.code += String.format("goto L%s\n", ++LblCount);
-                elseAux = LblCount;
-            }
-            this.code += String.format("L%s\n", aux1);
-            aux1 = LblCount;
-            visitChildren(ctx.instruccion().get(ctx.instruccion().size()-1).bloque());
-            if (ctx.ELIF().size() == 0){
-                this.code += String.format("L%s\n", elseAux);
-            } else{
-                this.code += String.format("L%s\n", lblGo);
-            }
-        }
-        if (ctx.ELIF().size() == 0 && ctx.ELSE() == null){
-            this.code += String.format("L%s\n", aux1);
-        }
+
+        this.code += "L" + lblGo + "\n";
+        
         return null;
     }
 

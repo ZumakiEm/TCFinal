@@ -1,5 +1,6 @@
 //package App;
 
+import org.antlr.runtime.tree.TreeWizard.Visitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -38,8 +39,12 @@ public class App {
 
         // Imprime estadisticas
         System.out.println(escucha);
+
+        MiVisitor visitor = new MiVisitor();
         if (!ErrorReporter.getInstance().thereIsError()){
             // codigo de 3 direccion
+            visitor.visit(tree);
+            visitor.printCode();
         }
         // Imprime el arbol obtenido
         //System.out.println(tree.toStringTree(parser));

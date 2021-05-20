@@ -1,12 +1,19 @@
-int pepe(int x, int y);
-
-int main() {
-    int z;
-    z = pepe(1,2);
-    return 0;
+if (2 > 0) {
+    int p = 0;
+    int q = 0;
+    q = 3;
 }
-
-int pepe(int x, int y) {
-    x = y + a || 2 + 1;
-    return x;
+else if(3 > 1){
+    int z = 0;
+}
+else if(1 > 0){
+    int x = 0;
+}
+else {
+    int d = 2;
+}
+if (2 > 0) {
+    int p = 0;
+    int q = 0;
+    q = 3;
 }

@@ -222,7 +222,8 @@ postfix : INC   // caso b++;
 
 if_condicional : IF PA operaciones PC instruccion else_condicional;
 
-else_condicional : (ELSE | ELSE_IF PA operaciones PC) instruccion
+else_condicional : ELSE instruccion
+                 | ELSE_IF PA operaciones PC instruccion else_condicional
                  |
                  ;
 

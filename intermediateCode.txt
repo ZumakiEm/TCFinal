@@ -1,21 +1,8 @@
-if 2 <= 0  goto L1
-p = 0
-q = 0
-q = 3
-goto L4
-L1 if 3 <= 1  goto L2
-z = 0
-goto L4
-L2 if 1 <= 0  goto L3
-x = 0
-goto L4
-L3
-d = 2
-L4
-if 2 <= 0  goto L4
-p = 0
-q = 0
-q = 3
-goto L5
-L5
+x = CALL pepe
+pepe:
+BeginFunc
+PopParam x
+PopParam y
+return x
+EndFunc
 

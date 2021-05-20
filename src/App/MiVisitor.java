@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -419,9 +420,9 @@ public class MiVisitor extends RulesBaseVisitor<String> {
 
     @Override
     public String visitFuncion(RulesParser.FuncionContext ctx) {
-        ArrayList<String> params = new ArrayList<String>();
+        LinkedList<String> params = new LinkedList<String>();
         if (ctx.parametros() != null) {
-            List<ParseTree> operaciones = new ArrayList<ParseTree>();
+            LinkedList<ParseTree> operaciones = new LinkedList<ParseTree>();
             findRuleNodes(ctx.parametros(), RulesParser.RULE_operaciones, operaciones);
             for (ParseTree operacion : operaciones) {
                 processOperacion(((RulesParser.OperacionesContext)operacion));
@@ -431,7 +432,7 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         for (String param : params) {
             this.code += param + "\n";
         }
-        if (this.tmp_add){
+        if (this.tmp_add) {
             this.code += "t" + this.count_tmp + " = CALL " + ctx.ID() + "\n";
             this.count_tmp++;
         } else{

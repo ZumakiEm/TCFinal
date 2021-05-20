@@ -76,11 +76,11 @@ public class ProcessDataParser {
             }
             // si no hay otra regla ParamDeclaracion (es el ultimo parametro de la funcion definida)
             // ej: int suma(int x, int y) -> (int y) es el ultimo parametro que se guardaria en la tabla
-            else {
+            else if(paramDeclCtx.getChildCount() != 0){
                 Id param = new Variable(paramDeclCtx.ID().getText(), paramDeclCtx.tipos().getText());
                 parametros.add(param);
-                return parametros;
             }
+            return parametros;
         }
     }
 

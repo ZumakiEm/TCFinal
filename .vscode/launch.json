@@ -17,7 +17,7 @@
             "type": "java",
             "name": "Launch Current File",
             "request": "launch",
-            "mainClass": "${file}"
+            "mainClass": "src/App/App.java"
         },
         {
             "type": "java",

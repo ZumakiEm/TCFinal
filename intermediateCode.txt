@@ -1,3 +1,5 @@
+pushParam 2
+pushParam 5
 x = CALL pepe
 pepe:
 BeginFunc

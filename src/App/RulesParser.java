@@ -1,4 +1,4 @@
-// Generated from c:\Users\diego\OneDrive\Documentos\facultad\TC\TPFinalGit\TPFinal\src\App\Rules.g4 by ANTLR 4.8
+// Generated from /home/zumakiem/Documentos/TPFinal/src/App/Rules.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;

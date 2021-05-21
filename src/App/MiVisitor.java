@@ -423,9 +423,10 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         LinkedList<String> params = new LinkedList<String>();
         if (ctx.parametros() != null) {
             LinkedList<ParseTree> operaciones = new LinkedList<ParseTree>();
-            findRuleNodes(ctx.parametros(), RulesParser.RULE_operaciones, operaciones);
+            findRuleNodes(ctx.parametros(), RulesParser.RULE_parametros, operaciones);
             for (ParseTree operacion : operaciones) {
-                processOperacion(((RulesParser.OperacionesContext)operacion));
+                RulesParser.ParametrosContext param = (RulesParser.ParametrosContext) operacion;
+                processOperacion(((RulesParser.OperacionesContext) param.operaciones()));
                 params.add("pushParam " + this.tmp_current);
             }
         }

@@ -37,15 +37,46 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         this.count_tmp = 0;
         this.code = "";
         this.tmp_previous = "";
-        this.tmp_current = "";
+        this.tmp_current = ""; // el nombre de la variable temporal actual por ej t0
 
     }
 
+    /**
+     * getNodes obtiene todos los nodos del árbol que coincidan con la regla de idx_rule
+     * @param ctx Árbol donde se busca la regla gramatical
+     * @param idx_rule Regla a buscar
+     * @return Lista de nodos coincidentes regla
+     */
     private List<ParseTree> getNodes(ParseTree ctx, int idx_rule) {
         return new ArrayList<ParseTree>(Trees.findAllRuleNodes(ctx, idx_rule));
     }
 
+    public void findRuleNodes(ParseTree t, int index, List<ParseTree> nodes) {
+        if (t instanceof ParserRuleContext) {
+            ParserRuleContext ctx = (ParserRuleContext) t;
+            if (ctx.getRuleIndex() == index) {
+                nodes.add(t);
+            }
+        }
+        // check children
+        for (int i = 0; i < t.getChildCount(); i++) {
+            if (!(t.getChild(i) instanceof RulesParser.OperacionesContext)) {
+                findRuleNodes(t.getChild(i), index, nodes);
+            }
+        }
+    }
 
+    public String getLastLine(String string) {
+        List<String> lines = Arrays.asList(string.split("\n"));
+        return new ArrayList<>(lines.subList(Math.max(0, lines.size() - 1), lines.size())).get(0);
+    }
+
+    /**
+     * separateOR toma un Contexto de operaciones y lo divide dado ||, por ejemplo:
+     * si la operacion es: 1 + 2 == 3 || 3 - 2 == 1, el metodo retornara una lista que contiene: [1+2==3, 3-2==1]
+     * @param t Contexto de operaciones aritmetico lógica
+     * @return lista de los terminos divididor por ||
+     */
     private List<ParseTree> separateOR(ParseTree t) {
         List<ParseTree> nodes = new ArrayList<ParseTree>();
         List<ParseTree> aux = this.getNodes(t, RulesParser.RULE_disyuncion);
@@ -70,6 +101,12 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         return nodes;        
     }
 
+    /**
+     * separateAND toma un Contexto de operaciones y lo divide dado &&, por ejemplo:
+     * si la operacion es: 1 + 2 == 3 && 3 - 2 == 1, el metodo retornara una lista que contiene: [1+2==3, 3-2==1]
+     * @param t Contexto de Conjuncion
+     * @return Lista de los terminos divididos por &&
+     */
     private List<ParseTree> separateAND(ParseTree t){
         List<ParseTree> nodes = new ArrayList<ParseTree>();
         List<ParseTree> aux = getNodes(t, RulesParser.RULE_conjuncion);
@@ -93,6 +130,40 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         return nodes;
     }
 
+    /**
+     * divide a los factores según los operadores booleanos presentes, por ejemplo si la operacion es:
+     * 1 + 3 == 2, el metodo retorna una lista igual a: [1+3, 2]
+     * @param t Contexto a tratar
+     * @return  lista con todos los factores separados por operación booleana
+     */
+    private List<ParseTree> separateComparisons(ParseTree t){
+        List<ParseTree> nodes = new ArrayList<ParseTree>();
+        List<ParseTree> aux = getNodes(t, RulesParser.RULE_igualdad);
+        List<ParseTree> opals = getNodes(t, RulesParser.RULE_factor); // factors enclosed in parentheses, such as ((1+2)+3)
+        int count = 0;
+        for (int i = 0; i < opals.size(); i++) {
+            if (((RulesParser.FactorContext) opals.get(i)).PA() != null){
+                count++;
+                count += getNodes(opals.get(i), RulesParser.RULE_comparacion).size();
+            }
+        }
+        int params = Trees.findAllRuleNodes(t, RulesParser.RULE_parametros).size();
+        params = aux.size() == params ? 0 : params;
+        for (int i = 0; i < aux.size() - params - count; i++) {
+            if (aux.get(i).getChild(0) instanceof RulesParser.IgualdadContext){
+                nodes.add(((RulesParser.IgualdadContext) aux.get(i)).expresion());
+            } else{
+                nodes.add(aux.get(i));
+            }
+        }
+        Collections.reverse(nodes);
+        return nodes;
+    }
+
+    /**
+     * toma un Conjunción Context para dividir la operación según los operadores lógicos AND
+     * @param ctx
+     */
     private void divideAND(ParseTree ctx) {
         String operator = "&&";
         List<ParseTree> terminos = separateAND(ctx);
@@ -119,30 +190,6 @@ public class MiVisitor extends RulesBaseVisitor<String> {
                 concatTemps(operator);
             }
         }
-    }
-
-    private List<ParseTree> separateComparisons(ParseTree t){
-        List<ParseTree> nodes = new ArrayList<ParseTree>();
-        List<ParseTree> aux = getNodes(t, RulesParser.RULE_igualdad);
-        List<ParseTree> opals = getNodes(t, RulesParser.RULE_factor); // factors enclosed in parentheses, such as ((1+2)+3)
-        int count = 0;
-        for (int i = 0; i < opals.size(); i++) {
-            if (((RulesParser.FactorContext) opals.get(i)).PA() != null){
-                count++;
-                count += getNodes(opals.get(i), RulesParser.RULE_comparacion).size();
-            }
-        }
-        int params = Trees.findAllRuleNodes(t, RulesParser.RULE_parametros).size();
-        params = aux.size() == params ? 0 : params;
-        for (int i = 0; i < aux.size() - params - count; i++) {
-            if (aux.get(i).getChild(0) instanceof RulesParser.IgualdadContext){
-                nodes.add(((RulesParser.IgualdadContext) aux.get(i)).expresion());
-            } else{
-                nodes.add(aux.get(i));
-            }
-        }
-        Collections.reverse(nodes);
-        return nodes;
     }
 
     private void concatTemps(String operation) {
@@ -211,21 +258,6 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
-    public void findRuleNodes(ParseTree t, int index, List<ParseTree> nodes) {
-        if (t instanceof ParserRuleContext) {
-            ParserRuleContext ctx = (ParserRuleContext) t;
-            if (ctx.getRuleIndex() == index) {
-                nodes.add(t);
-            }
-        }
-        // check children
-        for (int i = 0; i < t.getChildCount(); i++) {
-            if (!(t.getChild(i) instanceof RulesParser.OperacionesContext)) {
-                findRuleNodes(t.getChild(i), index, nodes);
-            }
-        }
-    }
-
     private void processOperacion(RulesParser.OperacionesContext ctx) {
         String operator = "||";
         List<ParseTree> terminos = separateOR(ctx);
@@ -264,11 +296,6 @@ public class MiVisitor extends RulesBaseVisitor<String> {
                 }       
             }
         return newOperation.toString();
-    }
-
-    public String getLastLine(String string) {
-        List<String> lines = Arrays.asList(string.split("\n"));
-        return new ArrayList<>(lines.subList(Math.max(0, lines.size() - 1), lines.size())).get(0);
     }
 
     @Override
@@ -341,6 +368,7 @@ public class MiVisitor extends RulesBaseVisitor<String> {
 
     public String visitCiclo_do(RulesParser.Ciclo_doContext ctx) {
         this.count_label++;
+        code += String.format("\nL%s:", this.count_label);
         visitChildren(ctx.instruccion().ambito());
         String operation = ctx.operaciones().getChild(0).getText();
         this.code += String.format("if %s goto L%s\n", getOpossiteOperation(operation), this.count_label);

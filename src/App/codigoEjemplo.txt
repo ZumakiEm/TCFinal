@@ -1,7 +1,5 @@
-int pepe(int x, int y);
-
-int x = pepe(2, 5);
-
-int pepe(int x, int y) {
-    return x;
+int a = 0 < 1;
+int p = 4;
+if (a > p || p != a) {
+    p++;
 }

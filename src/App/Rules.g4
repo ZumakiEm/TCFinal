@@ -111,7 +111,7 @@ instruccion : declaracion PYC
             | ambito
             | ciclo_for
             | ciclo_while
-            | ciclo_do
+            | ciclo_do PYC
             | declaracion_funcion PYC
 			| definicion_funcion
 			| funcion PYC

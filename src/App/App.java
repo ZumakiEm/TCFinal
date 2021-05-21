@@ -16,10 +16,10 @@ public class App {
         // create a lexer that feeds off of input CharStream
         RulesLexer lexer = new RulesLexer(input);
         
-        // create a buffer of tokens pulled from the lexer
+        // genera los tokens sacados del lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         
-        // create a parser that feeds off the tokens buffer
+        // toma los tokens del codigo
         RulesParser parser = new RulesParser(tokens);
                 
         // Solicito al parser que comience indicando una regla gramatical
@@ -37,7 +37,7 @@ public class App {
         // En este caso la regla es el simbolo inicial
         ParseTree tree = parser.programa();
 
-        // Imprime estadisticas
+        // Imprime tabla de simbolos
         System.out.println(escucha);
 
         MiVisitor visitor = new MiVisitor();

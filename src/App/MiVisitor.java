@@ -51,6 +51,13 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         return new ArrayList<ParseTree>(Trees.findAllRuleNodes(ctx, idx_rule));
     }
 
+    /**
+     * findRuleNodes busca todos los nodos que coincidan con la regla pasada por parametro, clasificando y 
+     * limpiando nodos residuales no pertenecientes a la regla
+     * @param t     Arbol sobre el cual buscar las reglas
+     * @param index Regla a buscar
+     * @param nodes Lista en la cual almacenar los nodos
+     */
     public void findRuleNodes(ParseTree t, int index, List<ParseTree> nodes) {
         if (t instanceof ParserRuleContext) {
             ParserRuleContext ctx = (ParserRuleContext) t;
@@ -66,6 +73,11 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
+    /**
+     * getLastLine toma un String para retornar la última línea
+     * @param string String sobre el cual obtener su última línea
+     * @return Devuelve la última línea del String
+     */
     public String getLastLine(String string) {
         List<String> lines = Arrays.asList(string.split("\n"));
         return new ArrayList<>(lines.subList(Math.max(0, lines.size() - 1), lines.size())).get(0);
@@ -110,10 +122,10 @@ public class MiVisitor extends RulesBaseVisitor<String> {
     private List<ParseTree> separateAND(ParseTree t){
         List<ParseTree> nodes = new ArrayList<ParseTree>();
         List<ParseTree> aux = getNodes(t, RulesParser.RULE_conjuncion);
-        List<ParseTree> opals = getNodes(t, RulesParser.RULE_factor); // factors enclosed in parentheses, such as ((1+2)+3)
+        List<ParseTree> factores = getNodes(t, RulesParser.RULE_factor); // factors enclosed in parentheses, such as ((1+2)+3)
         int count = 0;
-        for (int i = 0; i < opals.size(); i++) {
-            if (((RulesParser.FactorContext) opals.get(i)).PA() != null){
+        for (int i = 0; i < factores.size(); i++) {
+            if (((RulesParser.FactorContext) factores.get(i)).PA() != null){
                 count++;
             }
         }
@@ -139,12 +151,12 @@ public class MiVisitor extends RulesBaseVisitor<String> {
     private List<ParseTree> separateComparisons(ParseTree t){
         List<ParseTree> nodes = new ArrayList<ParseTree>();
         List<ParseTree> aux = getNodes(t, RulesParser.RULE_igualdad);
-        List<ParseTree> opals = getNodes(t, RulesParser.RULE_factor); // factors enclosed in parentheses, such as ((1+2)+3)
+        List<ParseTree> factors = getNodes(t, RulesParser.RULE_factor); // factors enclosed in parentheses, such as ((1+2)+3)
         int count = 0;
-        for (int i = 0; i < opals.size(); i++) {
-            if (((RulesParser.FactorContext) opals.get(i)).PA() != null){
+        for (int i = 0; i < factors.size(); i++) {
+            if (((RulesParser.FactorContext) factors.get(i)).PA() != null){
                 count++;
-                count += getNodes(opals.get(i), RulesParser.RULE_comparacion).size();
+                count += getNodes(factors.get(i), RulesParser.RULE_comparacion).size();
             }
         }
         int params = Trees.findAllRuleNodes(t, RulesParser.RULE_parametros).size();
@@ -178,6 +190,10 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
+    /**
+     * divideComparisons toma un contexto y divide a la operación por los operadores aritméticos presentes (==, !=, <, >, <=, >=)
+     * @param ctx
+     */
     private void divideComparisons(ParseTree ctx) {
         List<ParseTree> terminos = separateComparisons(ctx);
         String temp;
@@ -192,12 +208,22 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
+    /**
+     * concatTemps concatena los temporales con una operación de por medio, tomando el temporal anterior
+     * y el temporal actual
+     * @param operation
+     */
     private void concatTemps(String operation) {
         this.code += String.format("t%d = %s %s %s \n", this.count_tmp, this.tmp_previous, operation, this.tmp_current);
         this.tmp_current = "t" + this.count_tmp;
         this.count_tmp++;
     }
 
+    /**
+     * processTerms procesa todos los términos en el contexto, analizando si dentro del término hay factores para procesarlos
+     * previamente
+     * @param ctx
+     */
     private void processTerms(ParseTree ctx) {
         List<ParseTree> ruleTerms = new ArrayList<ParseTree>();
         findRuleNodes(ctx, RulesParser.RULE_termino, ruleTerms);
@@ -234,6 +260,10 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
+    /**
+     * processFactors toma una lista de factores y realiza las operaciones presentes
+     * @param factors
+     */
     private void processFactors(List<ParseTree> factors) {
         String temp;
         for(int i=0; i < factors.size(); i++) {
@@ -258,6 +288,10 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
+    /**
+     * toma un operaciones Context para dividir la operación según los operadores lógicos OR
+     * @param ctx Context operaciones
+     */
     private void processOperacion(RulesParser.OperacionesContext ctx) {
         String operator = "||";
         List<ParseTree> terminos = separateOR(ctx);
@@ -272,6 +306,13 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         }
     }
 
+
+    /**
+     * getOppossiteOperation devuelve la operacion booleana opuesta dada una operacion booleana original
+     * Por ejemplo: dada la operacion x == y, el metodo retornara x != y
+     * @param operation operacion sobre la cual obtener su opuesto
+     * @return operacion booleana opuesta
+     */
     private String getOpossiteOperation(String operation) {
         StringBuilder newOperation = new StringBuilder();
             for (int i = 0; i < operation.length(); i++) {     

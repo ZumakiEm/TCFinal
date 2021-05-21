@@ -472,8 +472,11 @@ public class MiVisitor extends RulesBaseVisitor<String> {
         String parameter;
         List<ParseTree> params = getNodes(ctx, RulesParser.RULE_param_definicion);
         for (int i = 0; i < params.size(); i++) {
-            parameter = ((RulesParser.Param_definicionContext)params.get(i)).ID().getText();
-            this.code += "PopParam " + parameter + "\n";
+            RulesParser.Param_definicionContext actual = (RulesParser.Param_definicionContext)params.get(i);
+            if (actual.ID() != null) {
+                parameter = actual.ID().getText();
+                this.code += "PopParam " + parameter + "\n";
+            }
         }
         visitChildren(ctx.ambito());
         this.code += "EndFunc\n";

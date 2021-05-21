@@ -1,5 +1,11 @@
-int a = 0 < 1;
-int p = 4;
-if (a > p || p != a) {
-    p++;
+int pepe(int x, int p);
+
+int main() {
+    int z = 3;
+    return 0;
+}
+
+int pepe(int x, int p) {
+    int a = 3;
+    return a;
 }
